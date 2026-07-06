@@ -55,6 +55,8 @@ HTML = """<!doctype html>
       font-size: 18px;
       font-weight: 700;
       box-shadow: 0 4px 14px rgba(31, 111, 235, 0.24);
+      touch-action: none;
+      user-select: none;
     }
     button:active {
       transform: translateY(1px);
@@ -88,15 +90,17 @@ HTML = """<!doctype html>
   <main>
     <h1>PatchBot</h1>
     <section class="controls">
-      <button class="forward" onclick="sendCommand('forward')">Forward</button>
-      <button class="left" onclick="sendCommand('left')">Left</button>
-      <button class="stop" onclick="sendCommand('stop')">Stop</button>
-      <button class="right" onclick="sendCommand('right')">Right</button>
-      <button class="reverse" onclick="sendCommand('reverse')">Reverse</button>
+      <button class="forward" data-command="forward">Forward</button>
+      <button class="left" data-command="left">Left</button>
+      <button class="stop" data-command="stop">Stop</button>
+      <button class="right" data-command="right">Right</button>
+      <button class="reverse" data-command="reverse">Reverse</button>
     </section>
     <div class="status" id="status">Ready</div>
   </main>
   <script>
+    let activePointer = null;
+
     async function sendCommand(command) {
       const status = document.getElementById('status');
       status.textContent = 'Sending ' + command + '...';
@@ -107,6 +111,41 @@ HTML = """<!doctype html>
         status.textContent = 'Connection lost';
       }
     }
+
+    function press(event) {
+      event.preventDefault();
+      const command = event.currentTarget.dataset.command;
+
+      if (command === 'stop') {
+        activePointer = null;
+        sendCommand('stop');
+        return;
+      }
+
+      activePointer = event.pointerId;
+      if (event.currentTarget.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+      sendCommand(command);
+    }
+
+    function release(event) {
+      event.preventDefault();
+
+      if (activePointer === event.pointerId) {
+        activePointer = null;
+        sendCommand('stop');
+      }
+    }
+
+    document.querySelectorAll('button').forEach((button) => {
+      button.addEventListener('pointerdown', press);
+      button.addEventListener('pointerup', release);
+      button.addEventListener('pointercancel', release);
+      button.addEventListener('lostpointercapture', release);
+    });
+
+    window.addEventListener('blur', () => sendCommand('stop'));
   </script>
 </body>
 </html>

@@ -43,7 +43,7 @@ mpremote connect auto fs cp main.py :main.py
 http://192.168.4.1/
 ```
 
-Connect a phone or laptop to the `PatchBot` Wi-Fi network, then open that address in a browser. The page has controls for forward, reverse, turn left, turn right, and stop.
+Connect a phone or laptop to the `PatchBot` Wi-Fi network, then open that address in a browser. Hold a direction button to move; release it to stop automatically. The stop button still stops the robot immediately.
 
 The motors are stopped when the web server starts. They only move when a control button is pressed.
 
