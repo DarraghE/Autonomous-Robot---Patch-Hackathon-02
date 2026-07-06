@@ -1,115 +1,71 @@
-from __future__ import annotations
-
-import argparse
-import time
-from dataclasses import dataclass
-
-from gpiozero import OutputDevice
+from machine import Pin
+from time import sleep
 
 
-@dataclass(frozen=True)
-class MotorPins:
-    forward_pin: int
-    backward_pin: int
+IN1_PIN = 2
+IN2_PIN = 11
+IN3_PIN = 10
+IN4_PIN = 8
 
 
 class WheelMotor:
-    def __init__(self, pins: MotorPins) -> None:
-        self._forward = OutputDevice(pins.forward_pin, active_high=True, initial_value=False)
-        self._backward = OutputDevice(pins.backward_pin, active_high=True, initial_value=False)
+    def __init__(self, forward_pin, backward_pin):
+        self._forward = Pin(forward_pin, Pin.OUT, value=0)
+        self._backward = Pin(backward_pin, Pin.OUT, value=0)
+        self.stop()
 
-    def forward(self) -> None:
+    def forward(self):
         self._backward.off()
         self._forward.on()
 
-    def backward(self) -> None:
+    def backward(self):
         self._forward.off()
         self._backward.on()
 
-    def stop(self) -> None:
+    def stop(self):
         self._forward.off()
         self._backward.off()
-
-    def close(self) -> None:
-        self.stop()
-        self._forward.close()
-        self._backward.close()
 
 
 class RobotWheels:
     """
-    Controls a two-wheel robot through an H-bridge style motor driver.
+    Wheel control for an ESP32-C6-DevKitC-1 running MicroPython.
 
-    Pin numbering uses Raspberry Pi BCM GPIO numbers.
+    Pin mapping:
+    - GPIO2 -> IN1
+    - GPIO11 -> IN2
+    - GPIO10 -> IN3
+    - GPIO8 -> IN4
     """
 
-    def __init__(self) -> None:
-        self.left = WheelMotor(MotorPins(forward_pin=2, backward_pin=11))  # IN1 / IN2
-        self.right = WheelMotor(MotorPins(forward_pin=10, backward_pin=8))  # IN3 / IN4
+    def __init__(self):
+        self.left = WheelMotor(forward_pin=IN1_PIN, backward_pin=IN2_PIN)
+        self.right = WheelMotor(forward_pin=IN3_PIN, backward_pin=IN4_PIN)
         self.stop()
 
-    def forward(self) -> None:
+    def forward(self):
         self.left.forward()
         self.right.forward()
 
-    def backward(self) -> None:
+    def backward(self):
         self.left.backward()
         self.right.backward()
 
-    def turn_left(self) -> None:
+    def turn_left(self):
         self.left.backward()
         self.right.forward()
 
-    def turn_right(self) -> None:
+    def turn_right(self):
         self.left.forward()
         self.right.backward()
 
-    def stop(self) -> None:
+    def stop(self):
         self.left.stop()
         self.right.stop()
 
-    def close(self) -> None:
-        self.stop()
-        self.left.close()
-        self.right.close()
-
-    def __enter__(self) -> "RobotWheels":
-        return self
-
-    def __exit__(self, *_exc: object) -> None:
-        self.close()
-
-
-def run_command(command: str, seconds: float) -> None:
-    with RobotWheels() as wheels:
-        action = getattr(wheels, command)
-        action()
-        time.sleep(seconds)
-        wheels.stop()
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Control the autonomous robot wheel motors.")
-    parser.add_argument(
-        "command",
-        choices=["forward", "backward", "turn_left", "turn_right", "stop"],
-        help="Wheel command to run.",
-    )
-    parser.add_argument(
-        "--seconds",
-        type=float,
-        default=1.0,
-        help="How long to run the command before stopping. Defaults to 1 second.",
-    )
-    args = parser.parse_args()
-
-    if args.command == "stop":
-        with RobotWheels() as wheels:
-            wheels.stop()
-        return
-
-    run_command(args.command, args.seconds)
-
-
-if __name__ == "__main__":
-    main()
+    def run_for(self, command, seconds=1):
+        try:
+            getattr(self, command)()
+            sleep(seconds)
+        finally:
+            self.stop()
