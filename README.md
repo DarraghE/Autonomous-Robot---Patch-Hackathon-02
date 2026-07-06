@@ -41,7 +41,9 @@ mpremote connect auto fs cp robot_motor_controller.py :robot_motor_controller.py
 mpremote connect auto fs cp main.py :main.py
 ```
 
-`main.py` only initializes the wheels and immediately stops them on boot.
+`main.py` waits 2 seconds after boot, then drives both wheels forward until the board is reset or powered off.
+
+Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in the ESP32-C6 will start the wheels automatically.
 
 ## Test commands
 
