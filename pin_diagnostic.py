@@ -4,6 +4,7 @@ from time import sleep
 
 
 MOTOR_INPUTS = {
+    # These are ESP32-C6 GPIO numbers, not physical header-position numbers.
     "in1": 2,
     "in2": 11,
     "in3": 10,

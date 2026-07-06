@@ -4,7 +4,7 @@ MicroPython control code for a two-wheel autonomous robot using an ESP32-C6-DevK
 
 ## Motor driver pins
 
-The code uses ESP32-C6 GPIO numbers:
+The code uses ESP32-C6 GPIO numbers, not physical header-position numbers or board-edge position labels:
 
 | ESP32-C6 GPIO | Motor driver input |
 | --- | --- |
@@ -18,7 +18,14 @@ Current wheel assumption:
 - Left wheel: IN1 / IN2
 - Right wheel: IN3 / IN4
 
-The board header position numbered `1` on the supplied ESP32-C6-DevKitC-1 pinout corresponds to `GPIO2`.
+If a number printed on the ESP32 board does not match the GPIO label on the diagram, use the GPIO label from the diagram for the code. For example, if the board marking `1` corresponds to `GPIO8`, then the code value for that connection is `8`.
+
+Current forward command:
+
+- Sets IN1 / GPIO2 high
+- Sets IN3 / GPIO10 high
+- Keeps IN2 / GPIO11 low
+- Keeps IN4 / GPIO8 low
 
 If either wheel spins the wrong direction during testing, swap that wheel's `forward_pin` and `backward_pin` values in `robot_motor_controller.py`.
 

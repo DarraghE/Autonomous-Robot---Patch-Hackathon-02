@@ -2,6 +2,7 @@ from machine import Pin
 from time import sleep
 
 
+# These are ESP32-C6 GPIO numbers, not physical header-position numbers.
 IN1_PIN = 2
 IN2_PIN = 11
 IN3_PIN = 10
