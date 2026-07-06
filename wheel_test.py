@@ -1,9 +1,16 @@
 import sys
+from time import sleep
 
-from robot_motor_controller import RobotWheels
+from robot_motor_controller import backward, forward, stop, turn_left, turn_right
 
 
-COMMANDS = ("forward", "backward", "turn_left", "turn_right", "stop")
+COMMANDS = {
+    "forward": forward,
+    "backward": backward,
+    "turn_left": turn_left,
+    "turn_right": turn_right,
+    "stop": stop,
+}
 
 
 def main():
@@ -11,14 +18,16 @@ def main():
     seconds = float(sys.argv[2]) if len(sys.argv) > 2 else 1
 
     if command not in COMMANDS:
+        stop()
         print("Use one of: {}".format(", ".join(COMMANDS)))
         return
 
-    wheels = RobotWheels()
-    if command == "stop":
-        wheels.stop()
-    else:
-        wheels.run_for(command, seconds)
+    try:
+        COMMANDS[command]()
+        if command != "stop":
+            sleep(seconds)
+    finally:
+        stop()
 
 
 main()

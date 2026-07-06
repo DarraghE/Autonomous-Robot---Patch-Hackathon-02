@@ -1,10 +1,10 @@
 from time import sleep
 
-from robot_motor_controller import RobotWheels
+from robot_motor_controller import forward, stop
 
 
-BOOT_DELAY_SECONDS = 2
-
-wheels = RobotWheels()
-sleep(BOOT_DELAY_SECONDS)
-wheels.forward()
+stop()
+sleep(5)
+forward()
+sleep(5)
+stop()

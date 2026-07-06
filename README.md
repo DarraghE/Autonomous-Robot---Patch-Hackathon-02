@@ -13,21 +13,7 @@ The code uses ESP32-C6 GPIO numbers, not physical header-position numbers or boa
 | GPIO10 | IN3 |
 | GPIO8 | IN4 |
 
-Current wheel assumption:
-
-- Left wheel: IN1 / IN2
-- Right wheel: IN3 / IN4
-
-If a number printed on the ESP32 board does not match the GPIO label on the diagram, use the GPIO label from the diagram for the code. For example, if the board marking `1` corresponds to `GPIO8`, then the code value for that connection is `8`.
-
-Current forward command:
-
-- Sets IN1 / GPIO2 high
-- Sets IN3 / GPIO10 high
-- Keeps IN2 / GPIO11 low
-- Keeps IN4 / GPIO8 low
-
-If either wheel spins the wrong direction during testing, swap that wheel's `forward_pin` and `backward_pin` values in `robot_motor_controller.py`.
+Forward sets IN1 / GPIO2 and IN3 / GPIO10 high, while keeping IN2 / GPIO11 and IN4 / GPIO8 low.
 
 Note: on the ESP32-C6-DevKitC-1, GPIO8 is also associated with the boot/ROM function on the board pinout. The code supports it because it is wired to IN4 here, but if the board has trouble booting while the motor driver is connected, move IN4 to a safer free GPIO and update `IN4_PIN`.
 
@@ -50,9 +36,9 @@ mpremote connect auto fs cp robot_motor_controller.py :robot_motor_controller.py
 mpremote connect auto fs cp main.py :main.py
 ```
 
-`main.py` waits 2 seconds after boot, then drives both wheels forward until the board is reset or powered off.
+`main.py` keeps all motor inputs off for 5 seconds, drives both motors forward for 5 seconds, then turns all motor inputs off again.
 
-Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in the ESP32-C6 will start the wheels automatically.
+Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in or resetting the ESP32-C6 will run the 5-second forward movement.
 
 ## Test commands
 
@@ -67,16 +53,3 @@ mpremote connect auto run wheel_test.py stop
 ```
 
 The motors are stopped automatically when the script exits.
-
-## Pin diagnostic
-
-To verify wiring one motor-driver input at a time:
-
-```bash
-mpremote connect auto run pin_diagnostic.py in1 1
-mpremote connect auto run pin_diagnostic.py in2 1
-mpremote connect auto run pin_diagnostic.py in3 1
-mpremote connect auto run pin_diagnostic.py in4 1
-```
-
-If the driver inputs toggle but the motors do not move, check that the motor driver has motor power, ESP32 ground and driver ground are connected together, and any enable pins or jumpers on the motor driver are enabled.
