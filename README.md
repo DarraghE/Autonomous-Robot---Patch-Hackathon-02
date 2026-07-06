@@ -18,6 +18,8 @@ Current wheel assumption:
 - Left wheel: IN1 / IN2
 - Right wheel: IN3 / IN4
 
+The board header position numbered `1` on the supplied ESP32-C6-DevKitC-1 pinout corresponds to `GPIO2`.
+
 If either wheel spins the wrong direction during testing, swap that wheel's `forward_pin` and `backward_pin` values in `robot_motor_controller.py`.
 
 Note: on the ESP32-C6-DevKitC-1, GPIO8 is also associated with the boot/ROM function on the board pinout. The code supports it because it is wired to IN4 here, but if the board has trouble booting while the motor driver is connected, move IN4 to a safer free GPIO and update `IN4_PIN`.
@@ -58,3 +60,16 @@ mpremote connect auto run wheel_test.py stop
 ```
 
 The motors are stopped automatically when the script exits.
+
+## Pin diagnostic
+
+To verify wiring one motor-driver input at a time:
+
+```bash
+mpremote connect auto run pin_diagnostic.py in1 1
+mpremote connect auto run pin_diagnostic.py in2 1
+mpremote connect auto run pin_diagnostic.py in3 1
+mpremote connect auto run pin_diagnostic.py in4 1
+```
+
+If the driver inputs toggle but the motors do not move, check that the motor driver has motor power, ESP32 ground and driver ground are connected together, and any enable pins or jumpers on the motor driver are enabled.
