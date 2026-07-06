@@ -1,6 +1,6 @@
 # Autonomous Robot - Patch Hackathon 02
 
-MicroPython control code for a two-wheel autonomous robot using an ESP32-C6-DevKitC-1 and a GPIO-connected motor driver.
+MicroPython control code and a small Wi-Fi web app for a two-wheel autonomous robot using an ESP32-C6-DevKitC-1 and a GPIO-connected motor driver.
 
 ## Motor driver pins
 
@@ -33,12 +33,19 @@ With the board connected over USB:
 
 ```bash
 mpremote connect auto fs cp robot_motor_controller.py :robot_motor_controller.py
+mpremote connect auto fs cp robot_web_app.py :robot_web_app.py
 mpremote connect auto fs cp main.py :main.py
 ```
 
-`main.py` drives both motors forward continuously until the ESP32-C6 is reset or powered off.
+`main.py` starts a Wi-Fi access point called `PatchBot` and serves the control app at:
 
-Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in or resetting the ESP32-C6 will start continuous forward movement.
+```text
+http://192.168.4.1/
+```
+
+Connect a phone or laptop to the `PatchBot` Wi-Fi network, then open that address in a browser. The page has controls for forward, reverse, turn left, turn right, and stop.
+
+The motors are stopped when the web server starts. They only move when a control button is pressed.
 
 ## Test commands
 

@@ -1,9 +1,4 @@
-from time import sleep
-
-from robot_motor_controller import forward
+from robot_web_app import run_server
 
 
-forward()
-
-while True:
-    sleep(60)
+run_server()
