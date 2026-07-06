@@ -36,9 +36,9 @@ mpremote connect auto fs cp robot_motor_controller.py :robot_motor_controller.py
 mpremote connect auto fs cp main.py :main.py
 ```
 
-`main.py` keeps all motor inputs off for 5 seconds, drives both motors forward for 5 seconds, then turns all motor inputs off again.
+`main.py` drives both motors forward continuously until the ESP32-C6 is reset or powered off.
 
-Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in or resetting the ESP32-C6 will run the 5-second forward movement.
+Keep the robot lifted or blocked safely before plugging it in. Once this boot script is installed, plugging in or resetting the ESP32-C6 will start continuous forward movement.
 
 ## Test commands
 
